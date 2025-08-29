@@ -4,6 +4,8 @@ import type { DayDataDTO } from '../../../types'
 import { Chart } from 'react-chartjs-2'
 import { 
 Chart as ChartJS, 
+BarController, 
+LineController,
 CategoryScale, 
 LinearScale, 
 BarElement,
@@ -12,11 +14,13 @@ PointElement,
 Title, 
 Tooltip, 
 Legend,
-type ChartData,
-type ChartOptions
+ChartData,
+ChartOptions
 } from 'chart.js'
 
 ChartJS.register(
+  BarController,
+  LineController,
   CategoryScale,
   LinearScale,
   BarElement,

@@ -6,10 +6,15 @@ import {
   getDayActivation,
   saveSensorData,
   updateHistoryDurationAndConsumption,
-  updateDayData
+  updateDayData,
+  updateLastAlive,
+  updateIsOnStatus
 } from '../../database'
+import { sendPushNoti } from '../../notification'
+import { sendEmail, EmailSignal } from '../../notification'
 
 const activeSessions = new Map<string, string>()
+let firstRun = true
 
 export const saveDataToDB = () => {
   client.on('message', async (topic, message) => {
@@ -20,13 +25,22 @@ export const saveDataToDB = () => {
       await handleActivation(msg, now)
     } else if (topic === 'send/data') {
       await handleSensorData(msg, now)
+    } else if (topic === 'alive') {
+      await updateLastAlive()
     }
   })
 }
 
 async function handleActivation(msg: any, now: Date) {
   if (msg.activate === true) {
+    if (firstRun) {
+      firstRun = false
+    } else {
+      await sendPushNoti('Trạng thái đèn', 'Đèn đã BẬT', 64)
+      await sendEmail(EmailSignal.LightOn)
+    }
     io.emit('status', true)
+    await updateIsOnStatus('test-device', true)
     const dayActivation = await getDayActivation(now)
     const historyID = `${convertDayId(now)}-${dayActivation + 1}`
     
@@ -45,6 +59,12 @@ async function handleActivation(msg: any, now: Date) {
     }
 
   } else if (msg.activate === false) {
+    if (firstRun) {
+      firstRun = false
+    } else {
+      await sendPushNoti('Trạng thái đèn', 'Đèn đã TẮT', 71)
+      await sendEmail(EmailSignal.LightOff)
+    }
     const historyID = activeSessions.get(msg.clientId)
     if (!historyID) return
 
@@ -59,6 +79,7 @@ async function handleActivation(msg: any, now: Date) {
 
     io.emit('status', false)
     io.emit('refetch')
+    updateIsOnStatus('test-device', false)
   }
 }
 

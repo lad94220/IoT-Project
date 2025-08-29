@@ -1,16 +1,29 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" },
-    { "path": "../backend"}
-  ],
+  "references": [],
   "compilerOptions": {
-    "baseUrl": "src",
+    "baseUrl": ".",
     "outDir": "dist",
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "composite": false,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": false,
+    "allowSyntheticDefaultImports": true,
+    "jsx": "react-jsx",
     "paths": {
       "libs/*": ["src/libs/*"],
       "@src/*": ["src/*"],
-    }
-  }
+      "@backend/*": ["../backend/*"]
+    },
+    "target": "ESNext",
+    "moduleResolution": "node",
+    "module": "ESNext",
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+  ]
 }

@@ -16,6 +16,16 @@ const loginInput = z.object({
   password: z.string().min(6),
 })
 
+const changePasswordInput = z.object({
+  identifier: z.string().min(1, "Username/Email/Phone is required"),
+  oldPassword: z.string().min(6, "Old password must be at least 6 characters"),
+  newPassword: z.string().min(6, "New password must be at least 6 characters"),
+  confirmNewPassword: z.string().min(6, "Please confirm your new password"),
+}).refine((data) => data.newPassword === data.confirmNewPassword, {
+  message: "Passwords do not match",
+  path: ["confirmNewPassword"],
+})
+
 export const authRouter = router({
   register: publicProcedure
     .input(registerInput)
@@ -88,5 +98,40 @@ export const authRouter = router({
         email: user.email,
         phone: user.phone,
       }
+    }),
+
+  changePassword: publicProcedure
+    .input(changePasswordInput)
+    .mutation(async ({ input }) => {
+      const { identifier, oldPassword, newPassword } = input
+
+      const user = await User.findOne({
+        $or: [
+          { username: identifier },
+          { email: identifier },
+          { phone: identifier }
+        ]
+      })
+
+      if (!user) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "User not found with provided identifier",
+          cause: { field: "identifier" },
+        })
+      }
+
+      const isOldPasswordCorrect = await compare(oldPassword, user.hashedPassword)
+      if (!isOldPasswordCorrect) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Old password is incorrect",
+          cause: { field: "oldPassword" },
+        })
+      }
+      user.hashedPassword = await hash(newPassword, 10)
+      await user.save()
+
+      return { message: "Password changed successfully" }
     }),
 })

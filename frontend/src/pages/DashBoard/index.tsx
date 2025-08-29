@@ -1,5 +1,5 @@
 import { Box, Grid } from "@mui/material"
-import { Control, TodayCount, Review, History, DataCharts, NavBar, Status } from './components'
+import { Control, TodayCount, Review, History, DataCharts, NavBar, Status, Chatbot } from './components'
 import { useEffect, useState } from 'react'
 import { trpc } from "../../libs"
 import type { DayDataDTO, HistoryDataDTO } from "../../types/index.ts"
@@ -8,7 +8,7 @@ import {
   socketControlDevice,
   socketControlAutoMode
 } from '../../libs'
-import { useUser } from "../../context/userContext.tsx"
+import { useUser } from "../../context"
 import { useNavigate } from "react-router-dom"
 
 const chartBoxStyle = {
@@ -21,11 +21,11 @@ const chartBoxStyle = {
 }
 
 export const DashBoard = () => {
-  const daysDataQuery = trpc.fetchDayData.useQuery({number : 7})
+  const daysDataQuery = trpc.fetch.getLastNDays.useQuery({days : 7})
   const daysData = daysDataQuery.data as DayDataDTO[] | undefined
-  const todayDataQuery = trpc.fetchTodayData.useQuery()
+  const todayDataQuery = trpc.fetch.getTodayData.useQuery()
   const todayData = todayDataQuery.data as DayDataDTO | undefined
-  const historyDataQuery = trpc.fetchHistory.useQuery({numbers: 5})
+  const historyDataQuery = trpc.fetch.getHistory.useQuery({numbers: 5})
   const historyData = historyDataQuery.data as HistoryDataDTO[] | undefined
 
   const [autoMode, setAutoMode] = useState(true)
@@ -138,6 +138,7 @@ export const DashBoard = () => {
           </Box>
         </Grid>
       </Grid>
+      <Chatbot />
     </Box>
   )
 }

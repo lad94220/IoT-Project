@@ -7,6 +7,7 @@ export const connectToMQTT = (): MqttClient => {
   const password = process.env.MQTT_PASSWORD
   const topic1 = process.env.MQTT_TOPIC_RECEIVE
   const topic2 = process.env.MQTT_TOPIC_ACTIVATE
+  const topic3 = process.env.MQTT_TOPIC_ALIVE
 
   if (!brokerUrl) throw new Error('MQTT_BROKER_URL is not defined in environment variables.')
 
@@ -43,6 +44,17 @@ export const connectToMQTT = (): MqttClient => {
       })
     } else {
       console.warn('⚠️ No MQTT_TOPIC_ACTIVATE defined, not subscribing to any topic.')
+    }
+    if (topic3) {
+      client.subscribe(topic3, (err) => {
+        if (err) {
+          console.error(`❌ Failed to subscribe to topic ALIVE:`, err)
+        } else {
+          console.log(`✅ Subscribed to topic ALIVE`)
+        }
+      })
+    } else {
+      console.warn('⚠️ No MQTT_TOPIC_ALIVE defined, not subscribing to any topic.')
     }
   })
 

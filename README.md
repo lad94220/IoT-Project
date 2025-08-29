@@ -32,8 +32,8 @@ This project is an Internet of Things (IoT) application developed for HCMUS cour
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/lad94220/IoT-Project.git
-cd IoT-Project
+git clone https://github.com/lad94220/Auto-Light.git
+cd Auto-Light
 ```
 
 ### Setup Instructions

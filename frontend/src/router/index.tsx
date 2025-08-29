@@ -2,6 +2,7 @@ import { createBrowserRouter, createRoutesFromElements, Navigate, Route, RouterP
 import { DashBoard } from '../pages/DashBoard'
 import { LoginPage } from '../pages/Login'
 import { SignUpPage } from '../pages/SignUp'
+import { ChangePasswordPage } from '../pages/ChangePassword'
 import { useUser } from '../context'
 
 export const RouterWrapper = () => {
@@ -13,7 +14,8 @@ export const RouterWrapper = () => {
         <Route index element={user ? <DashBoard /> : <Navigate to='/login' />} />
         <Route path='/dashboard' element={user ? <DashBoard /> : <Navigate to='/login' />} />
         <Route path='/login' element={!user ? <LoginPage /> : <Navigate to='/dashboard' />} />
-        <Route path='/signup' element={!user ? <SignUpPage /> : <Navigate to='/login' />} />
+        {/* <Route path='/signup' element={!user ? <SignUpPage /> : <Navigate to='/login' />} /> */}
+        <Route path="/change-password" element={<ChangePasswordPage />} />
         <Route path='*' element={user ? <DashBoard /> : <LoginPage />} />
       </Route>
     )

@@ -3,6 +3,21 @@ import cron from 'node-cron'
 import moment from 'moment-timezone'
 import { SensorData, DeviceStatus, DayData, ActivateHistory } from './models'
 import { convertDayId } from '../libs/'
+import { sendEmail, EmailSignal } from '../notification'
+import { sendPushNoti } from '../notification'
+
+let lastAlive = Date.now()
+let lastState = true
+const DEVICE_ALIVE_TIMEOUT = 35000
+
+export const updateLastAlive = async () => {
+  lastAlive = Date.now()
+  if (!lastState) {
+    lastState = true
+    await sendPushNoti('Kết nối đèn', 'Đèn đã kết nối lại', 95)
+    await sendEmail(EmailSignal.DeviceReconnected)
+  }
+}
 
 export const connectToDatabase = async () => {
   try {
@@ -86,6 +101,18 @@ export const createNewDay = async () => {
     }
   }, {
     timezone: 'Asia/Bangkok'
+  })
+
+}
+
+export const scheduleAliveCheck = async () => {
+  cron.schedule('*/10 * * * * *', async () => {
+    
+    if (Date.now() - lastAlive > DEVICE_ALIVE_TIMEOUT && lastState) {
+      lastState = false
+      await sendPushNoti('Kết nối đèn', 'Đèn đã mất kết nối', 97)
+      await sendEmail(EmailSignal.DeviceDisconnected)
+    }
   })
 }
 

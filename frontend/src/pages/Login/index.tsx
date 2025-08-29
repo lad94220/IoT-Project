@@ -147,18 +147,26 @@ export const LoginPage = () => {
         </Button>
 
         {errors.root && (
-          <Typography variant="caption" color="error" sx={{ width: "80%", textAlign: "center", mb: 2 }}>
+          <Typography variant="caption" color="error" sx={{ width: "80%", textAlign: "center", mb: 2, fontSize: '1rem' }}>
             {errors.root.message?.toString()}
           </Typography>
         )}
-        <Button
+        {/* <Button
             variant="text"
             color="primary"
             onClick={() => navigate("/signup")}
             sx={{ textTransform: 'none', fontSize: '1.2rem' }}
           >
             Don't have an account? Sign Up
-          </Button>
+          </Button> */}
+        <Button
+          variant="text"
+          sx={{ textTransform: 'none', fontSize: '1rem' }}
+          onClick={() => navigate("/change-password")}
+        >
+          Change Password
+        </Button>
+
       </Box>
     </div>
   )
